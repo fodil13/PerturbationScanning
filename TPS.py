@@ -9,7 +9,6 @@ ACADEMIC LICENSE
 ✅ PERMITTED:
 - Academic research and teaching
 - Non-commercial scientific use
-- Modification and distribution with attribution
 - Integration into research pipelines
 - Publication using this software
 
@@ -1310,3 +1309,4 @@ if __name__ == "__main__":
     print(f"✅ OUTPUT: Combined Excel-ready format for all interfaces")
     print(f"✅ TEMPORAL ANALYSIS: Early/Mid/Late stages for each interface")
     print("="*85)
+
