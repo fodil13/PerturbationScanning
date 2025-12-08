@@ -776,12 +776,14 @@ def run_universal_interface_analysis(segid1, segid2, n_runs=1, total_frames=100,
 # ============================================================
 
 def analyze_delta_distribution(all_pair_effects):
-    """Analyze the delta distribution to understand the scale"""
+    """Analyze the delta distribution to understand the scale - UPDATED for custom stages"""
     print(" Analyzing delta distribution across all stages...")
 
     all_deltas = []
+    
+    # Collect deltas from all stages (custom or default)
     for run in all_pair_effects:
-        for stage in ['early', 'mid', 'late']:
+        for stage in run.keys():  # Dynamic stage names
             all_deltas.extend(list(run[stage].values()))
 
     all_deltas = np.array(all_deltas)
@@ -889,33 +891,32 @@ def extract_individual_residues_by_stage(stage_results):
     return stage_residues
 
 def calculate_stage_percentiles(stage_residues, all_pair_effects):
-    """Calculate percentiles for each temporal stage using SUM Δ"""
+    """Calculate percentiles for each temporal stage using SUM Δ - UPDATED for custom stages"""
     print(" Calculating percentile ranking by temporal stage (using SUM Δ)...")
 
-    # First, we need to calculate the null distribution of SUM Δ values
-    # We'll sum all deltas for each residue across all runs to create null distribution
-    stage_null_dists = {}
-
+    # First, get all stage names from the data
+    all_stage_names = set()
+    for run_results in all_pair_effects:
+        all_stage_names.update(run_results.keys())
+    
     # Create a temporary structure to collect all deltas by residue
-    stage_residue_deltas = {
-        'early': defaultdict(list),
-        'mid': defaultdict(list),
-        'late': defaultdict(list)
-    }
+    stage_residue_deltas = {stage: defaultdict(list) for stage in all_stage_names}
 
     for run_results in all_pair_effects:
-        for stage in ['early', 'mid', 'late']:
-            for pair, delta in run_results[stage].items():
-                # Extract residue names from pair
-                segid1_part, segid2_part = pair.split(' ↔ ')
-                segid1_res = f"{segid1_part.split('-')[1]}-{segid1_part.split('-')[2]}"
-                segid2_res = f"{segid2_part.split('-')[1]}-{segid2_part.split('-')[2]}"
+        for stage in all_stage_names:
+            if stage in run_results:
+                for pair, delta in run_results[stage].items():
+                    # Extract residue names from pair
+                    segid1_part, segid2_part = pair.split(' ↔ ')
+                    segid1_res = f"{segid1_part.split('-')[1]}-{segid1_part.split('-')[2]}"
+                    segid2_res = f"{segid2_part.split('-')[1]}-{segid2_part.split('-')[2]}"
 
-                stage_residue_deltas[stage][segid1_res].append(delta)
-                stage_residue_deltas[stage][segid2_res].append(delta)
+                    stage_residue_deltas[stage][segid1_res].append(delta)
+                    stage_residue_deltas[stage][segid2_res].append(delta)
 
     # Calculate SUM Δ for each residue to create null distribution
-    for stage in ['early', 'mid', 'late']:
+    stage_null_dists = {}
+    for stage in all_stage_names:
         sum_deltas = []
         for residue, deltas in stage_residue_deltas[stage].items():
             if deltas:
@@ -932,50 +933,70 @@ def calculate_stage_percentiles(stage_residues, all_pair_effects):
 
     stage_percentiles = {}
 
-    for stage in ['early', 'mid', 'late']:
+    for stage in all_stage_names:
         null_dist = stage_null_dists[stage]
         stage_segid1_percentiles = []
         stage_segid2_percentiles = []
 
-        for residue_data in stage_residues[stage]['segid1']:
-            residue, total_delta, count = residue_data
-            if len(null_dist['all_sum_deltas']) > 0:
-                percentile = (np.sum(total_delta >= null_dist['all_sum_deltas']) / len(null_dist['all_sum_deltas'])) * 100
-            else:
-                percentile = 0.0
-            stage_segid1_percentiles.append((residue, total_delta, count, percentile))
+        # Check if stage exists in stage_residues
+        if stage in stage_residues:
+            for residue_data in stage_residues[stage]['segid1']:
+                residue, total_delta, count = residue_data
+                if len(null_dist['all_sum_deltas']) > 0:
+                    percentile = (np.sum(total_delta >= null_dist['all_sum_deltas']) / len(null_dist['all_sum_deltas'])) * 100
+                else:
+                    percentile = 0.0
+                stage_segid1_percentiles.append((residue, total_delta, count, percentile))
 
-        for residue_data in stage_residues[stage]['segid2']:
-            residue, total_delta, count = residue_data
-            if len(null_dist['all_sum_deltas']) > 0:
-                percentile = (np.sum(total_delta >= null_dist['all_sum_deltas']) / len(null_dist['all_sum_deltas'])) * 100
-            else:
-                percentile = 0.0
-            stage_segid2_percentiles.append((residue, total_delta, count, percentile))
+            for residue_data in stage_residues[stage]['segid2']:
+                residue, total_delta, count = residue_data
+                if len(null_dist['all_sum_deltas']) > 0:
+                    percentile = (np.sum(total_delta >= null_dist['all_sum_deltas']) / len(null_dist['all_sum_deltas'])) * 100
+                else:
+                    percentile = 0.0
+                stage_segid2_percentiles.append((residue, total_delta, count, percentile))
 
-        stage_percentiles[stage] = {
-            'segid1': stage_segid1_percentiles,
-            'segid2': stage_segid2_percentiles,
-            'null_stats': null_dist
-        }
+            stage_percentiles[stage] = {
+                'segid1': stage_segid1_percentiles,
+                'segid2': stage_segid2_percentiles,
+                'null_stats': null_dist
+            }
+        else:
+            # Create empty structure for missing stages
+            stage_percentiles[stage] = {
+                'segid1': [],
+                'segid2': [],
+                'null_stats': null_dist
+            }
 
     return stage_percentiles
 
 def print_temporal_staging_tables(stage_percentiles, num_residues_display=10):
-    """Print clean tables with SUM Δ"""
-    first_stage = list(stage_percentiles.keys())[0]
+    """Print clean tables with SUM Δ - UPDATED for custom stages"""
+    if not stage_percentiles:
+        print("   ⚠️  No stage data to display")
+        return
+    
+    # Use the actual stage names from the data
+    stage_names = list(stage_percentiles.keys())
+    
+    # Get protein names from first residue (if available)
     segid1_name = "Protein1"
     segid2_name = "Protein2"
+    
+    for stage in stage_names:
+        if stage_percentiles[stage]['segid1']:
+            sample_residue = stage_percentiles[stage]['segid1'][0][0] if stage_percentiles[stage]['segid1'] else ""
+            segid1_name = sample_residue.split('-')[0] if '-' in sample_residue else "Protein1"
+            break
+    
+    for stage in stage_names:
+        if stage_percentiles[stage]['segid2']:
+            sample_residue = stage_percentiles[stage]['segid2'][0][0] if stage_percentiles[stage]['segid2'] else ""
+            segid2_name = sample_residue.split('-')[0] if '-' in sample_residue else "Protein2"
+            break
 
-    if stage_percentiles[first_stage]['segid1']:
-        sample_residue = stage_percentiles[first_stage]['segid1'][0][0]
-        segid1_name = sample_residue.split('-')[0] if '-' in sample_residue else "Protein1"
-
-    if stage_percentiles[first_stage]['segid2']:
-        sample_residue = stage_percentiles[first_stage]['segid2'][0][0]
-        segid2_name = sample_residue.split('-')[0] if '-' in sample_residue else "Protein2"
-
-    for stage in ['early', 'mid', 'late']:
+    for stage in stage_names:
         print(f"\n" + "="*85)
         print(f" {stage.upper()} STAGE - RESIDUE RANKING (SUM Δ)")
         print("="*85)
@@ -994,14 +1015,19 @@ def print_temporal_staging_tables(stage_percentiles, num_residues_display=10):
         print("-" * 85)
         if len(null_stats['all_sum_deltas']) > 0:
             print(f"Stage Statistics: {len(null_stats['all_sum_deltas'])} residues, Sum Δ range: {np.min(null_stats['all_sum_deltas']):.3f}-{np.max(null_stats['all_sum_deltas']):.3f}")
+        else:
+            print(f"Stage Statistics: No data available")
 
 def print_excel_ready_temporal_output(stage_percentiles, segid1, segid2):
-    """Clean Excel-ready output with SUM Δ"""
+    """Clean Excel-ready output with SUM Δ - UPDATED for custom stages"""
     print("\n" + "="*70)
     print(f" EXCEL-READY OUTPUT: {segid1} ↔ {segid2} (SUM Δ)")
     print("="*70)
 
-    for stage in ['early', 'mid', 'late']:
+    # Use the actual stage names from the data
+    stage_names = list(stage_percentiles.keys())
+    
+    for stage in stage_names:
         print(f"\n{stage.upper()} STAGE:")
         print("Protein\tResidue\tSumDelta\tCount\tPercentile\tStage\tPerturbationType")
 
@@ -1066,14 +1092,21 @@ def analyze_perturbation_sensitivity(all_pair_effects, stage_residues):
     return ["ELECTROSTATIC", "HYDROPHOBIC", "STERIC", "AROMATIC", "H-BOND", "CONFORMATIONAL"]
 
 def calculate_total_interface_strength(stage_residues):
-    """Calculate total interface strength (Sum Δ) like paper Table 1"""
+    """Calculate total interface strength (Sum Δ) like paper Table 1 - UPDATED for custom stages"""
     print("\n" + "="*85)
     print(" TOTAL INTERFACE STRENGTH ANALYSIS (Paper Table 1 Methodology)")
     print("="*85)
 
+    if not stage_residues:
+        print("   ⚠️  No stage data available for interface strength calculation")
+        return {}
+    
     total_strengths = {}
-
-    for stage in ['early', 'mid', 'late']:
+    
+    # Use the actual stage names from the data
+    stage_names = list(stage_residues.keys())
+    
+    for stage in stage_names:
         segid1_total = sum(total_delta for _, total_delta, _ in stage_residues[stage]['segid1'])
         segid2_total = sum(total_delta for _, total_delta, _ in stage_residues[stage]['segid2'])
         total_interface = segid1_total + segid2_total
@@ -1089,27 +1122,39 @@ def calculate_total_interface_strength(stage_residues):
             'segid2_count': segid2_count
         }
 
-    print(f"\n{'Stage':<10} {'#Residues':<12} {'Segid1 Sum Δ':<15} {'Segid2 Sum Δ':<15} {'Total Sum Δ':<15}")
-    print("-" * 70)
+    # Sort stages by their order in the data (maintain temporal sequence)
+    sorted_stages = sorted(stage_names)
+    
+    print(f"\n{'Stage':<15} {'#Residues':<12} {'Segid1 Sum Δ':<15} {'Segid2 Sum Δ':<15} {'Total Sum Δ':<15}")
+    print("-" * 75)
 
-    for stage in ['early', 'mid', 'late']:
+    for stage in sorted_stages:
         stats = total_strengths[stage]
-        print(f"{stage:<10} {stats['segid1_count']}+{stats['segid2_count']:<11} "
+        print(f"{stage:<15} {stats['segid1_count']}+{stats['segid2_count']:<11} "
               f"{stats['segid1_total']:<15.3f} {stats['segid2_total']:<15.3f} {stats['total_interface']:<15.3f}")
 
-    # Calculate change over time
-    early_total = total_strengths['early']['total_interface']
-    late_total = total_strengths['late']['total_interface']
-    change_percent = ((late_total - early_total) / early_total * 100) if early_total > 0 else 0
-
-    print("\n TEMPORAL DYNAMICS:")
-    print(f"   • Early → Late change: {change_percent:+.1f}%")
-    if change_percent > 10:
-        print(f"   • Interface STRENGTHENS over time")
-    elif change_percent < -10:
-        print(f"   • Interface WEAKENS over time")
-    else:
-        print(f"   • Interface remains STABLE over time")
+    # Calculate change over time if we have multiple stages
+    if len(sorted_stages) >= 2:
+        first_stage = sorted_stages[0]
+        last_stage = sorted_stages[-1]
+        
+        first_total = total_strengths[first_stage]['total_interface']
+        last_total = total_strengths[last_stage]['total_interface']
+        
+        if first_total > 0:
+            change_percent = ((last_total - first_total) / first_total * 100)
+        else:
+            change_percent = 0
+        
+        print("\n TEMPORAL DYNAMICS:")
+        print(f"   • {first_stage} → {last_stage} change: {change_percent:+.1f}%")
+        
+        if change_percent > 10:
+            print(f"   • Interface STRENGTHENS over time")
+        elif change_percent < -10:
+            print(f"   • Interface WEAKENS over time")
+        else:
+            print(f"   • Interface remains STABLE over time")
 
     return total_strengths
 
@@ -1162,7 +1207,7 @@ def analyze_interface_pair(graph_path, model_path, segid1, segid2,
     # Analysis pipeline for this interface
     delta_stats = analyze_delta_distribution(pair_effects)
     
-    # Need to update aggregate_temporal_stages to handle dynamic stage names
+    # These functions now handle custom stage names dynamically
     stage_results = aggregate_temporal_stages(pair_effects, top_k=ANALYSIS_PARAMS['num_residues_display']*3)
     stage_residues = extract_individual_residues_by_stage(stage_results)
     stage_percentiles = calculate_stage_percentiles(stage_residues, pair_effects)
@@ -1183,7 +1228,7 @@ def analyze_interface_pair(graph_path, model_path, segid1, segid2,
         'total_strengths': total_strengths,
         'delta_stats': delta_stats
     }
-
+                              
 def detect_interface_pairs_from_graph(graph_path):
     """Auto-detect which interfaces are available in the graph"""
     print(f"📂 Loading dataset to detect available interfaces...")
