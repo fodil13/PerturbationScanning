@@ -659,31 +659,47 @@ def calculate_universal_distance_perturbation(model, graph, res1, res2, original
 
     return 0.0
 
-def enhanced_find_universal_interface_pairs(model, selected_graphs, segid1, segid2):
-    """Enhanced version with comprehensive perturbation scanning"""
+def enhanced_find_universal_interface_pairs(model, selected_graphs, segid1, segid2, 
+                                           stage_boundaries=None):
+    """Enhanced version with customizable temporal staging"""
     print(f"    Identifying critical {segid1}-{segid2} pairs with COMPREHENSIVE perturbations...")
 
     model.eval()
-    pair_deltas_accumulated = {
-        'early': defaultdict(list),
-        'mid': defaultdict(list),
-        'late': defaultdict(list)
-    }
-
+    
+    # DEFAULT staging: Early (0-33%), Mid (33-66%), Late (66-100%)
+    if stage_boundaries is None:
+        stage_boundaries = {
+            'early': (0.0, 0.33),
+            'mid': (0.33, 0.66),
+            'late': (0.66, 1.0)
+        }
+    
+    # Initialize accumulators for each stage
+    pair_deltas_accumulated = {stage: defaultdict(list) for stage in stage_boundaries.keys()}
+    
     total_frames = len(selected_graphs)
-    early_cutoff = total_frames // 3
-    mid_cutoff = 2 * total_frames // 3
-
-    print(f"    Temporal stages: Early (0-{early_cutoff}), Mid ({early_cutoff}-{mid_cutoff}), Late ({mid_cutoff}-{total_frames})")
+    
+    print(f"    Custom temporal staging:")
+    for stage, (start_frac, end_frac) in stage_boundaries.items():
+        start_frame = int(total_frames * start_frac)
+        end_frame = int(total_frames * end_frac)
+        print(f"      • {stage}: frames {start_frame}-{end_frame} ({start_frac*100:.0f}%-{end_frac*100:.0f}%)")
+    
     print(f"    Applying 6 perturbation types: Electrostatic, Hydrophobic, Steric, Aromatic, H-bond, Conformational")
 
     for frame_idx, graph in enumerate(selected_graphs):
-        if frame_idx < early_cutoff:
-            stage = 'early'
-        elif frame_idx < mid_cutoff:
-            stage = 'mid'
-        else:
-            stage = 'late'
+        # Determine which stage this frame belongs to
+        frame_frac = frame_idx / total_frames
+        current_stage = None
+        
+        for stage, (start_frac, end_frac) in stage_boundaries.items():
+            if start_frac <= frame_frac < end_frac:
+                current_stage = stage
+                break
+        
+        if current_stage is None:
+            # Default to last stage for edge case
+            current_stage = list(stage_boundaries.keys())[-1]
 
         with torch.no_grad():
             original_pred = model(graph).item()
@@ -702,30 +718,33 @@ def enhanced_find_universal_interface_pairs(model, selected_graphs, segid1, segi
             delta_intelligent = calculate_universal_intelligent_masking(model, graph, res1, res2, original_pred, segid1, segid2)
 
             delta = max(delta_comprehensive, delta_mask, delta_dist, delta_intelligent)
-            pair_deltas_accumulated[stage][pair_key].append(delta)
+            pair_deltas_accumulated[current_stage][pair_key].append(delta)
 
         if (frame_idx + 1) % 10 == 0:
-            print(f"      Frame {frame_idx} ({stage}): tested {len(interface_pairs)} pairs with 6+ perturbation types")
+            print(f"      Frame {frame_idx} ({current_stage}): tested {len(interface_pairs)} pairs with 6+ perturbation types")
 
     stage_results = {}
-    for stage in ['early', 'mid', 'late']:
+    for stage in stage_boundaries.keys():
         pair_deltas_mean = {}
         for pair, deltas in pair_deltas_accumulated[stage].items():
             if deltas:
                 pair_deltas_mean[pair] = np.mean(deltas)
         stage_results[stage] = pair_deltas_mean
 
-    print(f"   ✅ Enhanced analysis complete: Early={len(stage_results['early'])}, Mid={len(stage_results['mid'])}, Late={len(stage_results['late'])}")
+    print(f"   ✅ Enhanced analysis complete: {', '.join([f'{stage}={len(stage_results[stage])}' for stage in stage_boundaries.keys()])}")
     return stage_results
 
-def run_universal_interface_analysis(segid1, segid2, n_runs=1, total_frames=100, step=5, start_frame=0, max_frames=None):
-    """Universal interface analysis for ANY segid pair - ENHANCED"""
+def run_universal_interface_analysis(segid1, segid2, n_runs=1, total_frames=100, 
+                                     step=5, start_frame=0, max_frames=None,
+                                     stage_boundaries=None):
+    """Universal interface analysis for ANY segid pair - ENHANCED with customizable staging"""
     print(f"\n UNIVERSAL INTERFACE ANALYSIS: {segid1} ↔ {segid2}")
     print(f"   • Runs: {n_runs}")
     print(f"   • Frames: {total_frames} (step={step})")
     print(f"   • Start frame: {start_frame}")
     print(f"   • Max frames: {max_frames}")
     print(f"   • Focus: {segid1} ↔ {segid2} interactions")
+    print(f"   • Temporal staging: {stage_boundaries if stage_boundaries else 'Default (Early/Mid/Late)'}")
     print(f"   • Perturbations: Electrostatic, Hydrophobic, Steric, Aromatic, H-bond, Conformational")
 
     all_pair_effects = []
@@ -745,7 +764,9 @@ def run_universal_interface_analysis(segid1, segid2, n_runs=1, total_frames=100,
         selected_graphs = select_frames(graphs, total_frames, step, start_frame, max_frames)
 
         print(f"    Analyzing {len(selected_graphs)} frames for {segid1}-{segid2} pairs...")
-        pair_effects = enhanced_find_universal_interface_pairs(model, selected_graphs, segid1, segid2)
+        pair_effects = enhanced_find_universal_interface_pairs(
+            model, selected_graphs, segid1, segid2, stage_boundaries
+        )
         all_pair_effects.append(pair_effects)
 
     return all_pair_effects
@@ -794,23 +815,25 @@ def analyze_delta_distribution(all_pair_effects):
         return None
 
 def aggregate_temporal_stages(all_pair_effects, top_k=15):
-    """Aggregate results for each temporal stage using SUM Δ (not mean)"""
+    """Aggregate results for each temporal stage using SUM Δ"""
     print(" Aggregating interface pairs by TEMPORAL STAGES (using SUM Δ)...")
-
-    stage_aggregators = {
-        'early': defaultdict(list),
-        'mid': defaultdict(list),
-        'late': defaultdict(list)
-    }
+    
+    # First, detect all stage names from the data
+    stage_names = set()
+    for run_results in all_pair_effects:
+        stage_names.update(run_results.keys())
+    
+    stage_aggregators = {stage: defaultdict(list) for stage in stage_names}
 
     for run_results in all_pair_effects:
-        for stage in ['early', 'mid', 'late']:
-            for pair, delta in run_results[stage].items():
-                stage_aggregators[stage][pair].append(delta)
+        for stage in stage_names:
+            if stage in run_results:
+                for pair, delta in run_results[stage].items():
+                    stage_aggregators[stage][pair].append(delta)
 
     stage_results = {}
-    for stage in ['early', 'mid', 'late']:
-        pair_total_delta = {}  # Changed from pair_mean_delta
+    for stage in stage_names:
+        pair_total_delta = {}
         for pair, deltas in stage_aggregators[stage].items():
             if deltas:
                 pair_total_delta[pair] = np.sum(deltas)  # SUM not MEAN!
@@ -826,14 +849,14 @@ def extract_individual_residues_by_stage(stage_results):
 
     stage_residues = {}
 
-    for stage in ['early', 'mid', 'late']:
+    for stage in stage_results.keys():  # Dynamic stage names
         segid1_residues = defaultdict(list)
         segid2_residues = defaultdict(list)
         segid1_counts = defaultdict(int)
         segid2_counts = defaultdict(int)
 
         for pair_data in stage_results[stage]:
-            pair, total_delta = pair_data  # This is now SUM Δ
+            pair, total_delta = pair_data
             segid1_part, segid2_part = pair.split(' ↔ ')
             segid1_res = f"{segid1_part.split('-')[1]}-{segid1_part.split('-')[2]}"
             segid2_res = f"{segid2_part.split('-')[1]}-{segid2_part.split('-')[2]}"
@@ -845,13 +868,13 @@ def extract_individual_residues_by_stage(stage_results):
 
         segid1_aggregated = []
         for residue, deltas in segid1_residues.items():
-            total_delta = np.sum(deltas)  # SUM across all pairs for this residue
+            total_delta = np.sum(deltas)
             total_count = segid1_counts[residue]
             segid1_aggregated.append((residue, total_delta, total_count))
 
         segid2_aggregated = []
         for residue, deltas in segid2_residues.items():
-            total_delta = np.sum(deltas)  # SUM across all pairs for this residue
+            total_delta = np.sum(deltas)
             total_count = segid2_counts[residue]
             segid2_aggregated.append((residue, total_delta, total_count))
 
@@ -1096,7 +1119,8 @@ def calculate_total_interface_strength(stage_residues):
 
 def analyze_interface_pair(graph_path, model_path, segid1, segid2, 
                           start_frame=0, step=1, n_runs=1, total_frames=100, 
-                          max_frames=None, num_residues_display=10):
+                          max_frames=None, num_residues_display=10,
+                          stage_boundaries=None):
     """
     Core analysis function for a single interface pair.
     This can be easily called in a loop for multiple analyses.
@@ -1115,7 +1139,8 @@ def analyze_interface_pair(graph_path, model_path, segid1, segid2,
         'start_frame': start_frame,
         'max_frames': max_frames,
         'num_residues_display': num_residues_display,
-        'interface': f"{segid1}-{segid2}"
+        'interface': f"{segid1}-{segid2}",
+        'stage_boundaries': stage_boundaries
     }
 
     # Run ENHANCED analysis for this interface
@@ -1126,7 +1151,8 @@ def analyze_interface_pair(graph_path, model_path, segid1, segid2,
         total_frames=ANALYSIS_PARAMS['total_frames'],
         step=ANALYSIS_PARAMS['step'],
         start_frame=ANALYSIS_PARAMS['start_frame'],
-        max_frames=ANALYSIS_PARAMS['max_frames']
+        max_frames=ANALYSIS_PARAMS['max_frames'],
+        stage_boundaries=ANALYSIS_PARAMS['stage_boundaries']
     )
 
     if not pair_effects:
@@ -1135,6 +1161,8 @@ def analyze_interface_pair(graph_path, model_path, segid1, segid2,
     
     # Analysis pipeline for this interface
     delta_stats = analyze_delta_distribution(pair_effects)
+    
+    # Need to update aggregate_temporal_stages to handle dynamic stage names
     stage_results = aggregate_temporal_stages(pair_effects, top_k=ANALYSIS_PARAMS['num_residues_display']*3)
     stage_residues = extract_individual_residues_by_stage(stage_results)
     stage_percentiles = calculate_stage_percentiles(stage_residues, pair_effects)
