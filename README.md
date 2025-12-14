@@ -290,4 +290,4 @@ See full license terms in the code header.
 **Perturbation Scanning transforms molecular recognition from observational science to engineering discipline.**
 
 ---
-*Fodil Azzaz, PhD • Aix-Marseille University • INSERM UA16*
+*Fodil Azzaz, PhD
