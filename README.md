@@ -1,6 +1,6 @@
 # Perturbation Scanning (PS) & IIOS
 
-## ⚡ AI-Driven Biomolecular Interface Analysis & Design
+##  AI-Driven Biomolecular Interface Analysis & Design
 
 **Perturbation Scanning (PS)** is a computational framework that transforms molecular interaction analysis from passive observation to active mechanistic interrogation. By combining graph neural networks with systematic physicochemical perturbations, PS enables **stage-resolved, force-specific decomposition** of molecular interfaces—revealing not just *which* residues participate, but *how* and *when* they contribute through specific physical forces.
 
@@ -23,7 +23,7 @@
 
 ---
 
-## 📊 What PS Delivers
+##  What PS Delivers
 
 ### 1. **Mechanistic Deconstruction**
 - **Stage-resolved analysis** (early/mid/late binding)
@@ -46,7 +46,7 @@ PS calculates comprehensive interface metrics comparable to experimental measure
 
 ---
 
-## 🔬 Use Cases
+##  Use Cases
 
 ### A. **Protein Engineering**
 ```python
@@ -185,7 +185,7 @@ See full license terms in the code header.
 
 ---
 
-## 🆘 Support & Issues
+##  Support & Issues
 
 - **Documentation:** This README + comments in code
 - **Issues:** GitHub Issues tab
@@ -194,7 +194,7 @@ See full license terms in the code header.
 
 ---
 
-## 🔗 Related Resources
+##  Related Resources
 
 1. **Paper:** [DOI 10.64898/2025.12.09.692808](https://doi.org/10.64898/2025.12.09.692808)
 2. **Graph Converter:** [github.com/fodil13/md-graph-converter](https://github.com/fodil13/md-graph-converter)
