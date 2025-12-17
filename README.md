@@ -20,51 +20,6 @@
 - torch_geometric
 - numpy, scipy, matplotlib
 
-### Installation
-```bash
-git clone https://github.com/fodil13/perturbation-scanning.git
-cd perturbation-scanning
-pip install -r requirements.txt
-```
-
-### Step 1: Prepare Your Data
-PS works with **graph representations** of molecular dynamics trajectories. Convert your MD data using:
-```bash
-# First, get the graph converter
-git clone https://github.com/fodil13/md-graph-converter
-cd md-graph-converter
-python convert_md_to_graph.py --input trajectory.xtc --topology topology.pdb --output graphs.pt
-```
-
-### Step 2: Run PS Analysis
-```python
-from perturbation_scanning import analyze_interface_pair
-
-# Single interface analysis
-results = analyze_interface_pair(
-    graph_path="path/to/graphs.pt",
-    model_path="path/to/model.pth",
-    segid1="PROA",      # First protein
-    segid2="PROD",      # Second protein
-    total_frames=100,   # Number of frames to analyze
-    n_runs=1            # For statistical robustness
-)
-```
-
-### Step 3: Generate Design Proposals
-```python
-# Use IIOS for design (included in the same package)
-from iios import generate_mutations
-
-design_proposals = generate_mutations(
-    interface_results=results,
-    target_protein="PROA",
-    optimization_mode="affinity"
-)
-
-# Output: Ranked, energy-scored mutation suggestions
-print(design_proposals.head())
-```
 
 ---
 
@@ -198,46 +153,6 @@ interface_pairs = detect_interface_pairs_from_graph("graphs.pt")
 
 ---
 
-## 📚 Tutorial
-
-### Tutorial 1: Basic Interface Analysis
-```bash
-# 1. Convert your MD simulation
-python md_graph_converter/convert.py --input md_trajectory.xtc --topology complex.pdb
-
-# 2. Run PS
-python perturbation_scanning.py
-
-# 3. Check results in console AND generated .txt files
-```
-
-### Tutorial 2: Compare Multiple Conditions
-```python
-# Analyze wild-type vs mutant
-results_wt = analyze_interface_pair(..., segid1="PROA", segid2="PROB")
-results_mutant = analyze_interface_pair(..., segid1="PROA_MUT", segid2="PROB")
-
-# Compare total interface strengths
-print(f"WT: {results_wt['total_strengths']['late']['total_interface']:.2f}")
-print(f"Mutant: {results_mutant['total_strengths']['late']['total_interface']:.2f}")
-```
-
-### Tutorial 3: Generate Design Proposals
-```python
-from iios import design_interface
-
-# Input: PS results + target properties
-design = design_interface(
-    interface_profile=results['stage_percentiles'],
-    target_strength_increase=2.0,  # kcal/mol
-    exclude_residues=["CYS", "PRO"]  # Avoid problematic mutations
-)
-
-# Output: Ready-for-experiment mutation list
-design.to_csv("mutation_proposals.csv")
-```
-
----
 
 ## 📖 Citation
 
