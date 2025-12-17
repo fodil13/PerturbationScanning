@@ -1,4 +1,4 @@
-# Perturbation Scanning (PS) & IIOS
+# Perturbation Scanning (PS) 
 
 #Before using
 PerturbationScanning needs:
