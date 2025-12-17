@@ -1,5 +1,11 @@
 # Perturbation Scanning (PS) & IIOS
 
+#Before using
+PerturbationScanning needs:
+-  .pt file from md-graph-converter: https://github.com/fodil13/md-graph-converter
+-  .pth trained model from Stability Interface trainer: https://github.com/fodil13/stability-interface-TRAINER
+-  any question? contact me: azzaz.fodil@gmail.com
+
 ##  AI-Driven Biomolecular Interface Analysis & Design
 
 **Perturbation Scanning (PS)** is a computational framework that transforms molecular interaction analysis from passive observation to active mechanistic interrogation. By combining graph neural networks with systematic physicochemical perturbations, PS enables **stage-resolved, force-specific decomposition** of molecular interfaces—revealing not just *which* residues participate, but *how* and *when* they contribute through specific physical forces.
