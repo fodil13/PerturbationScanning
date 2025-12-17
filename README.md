@@ -12,7 +12,7 @@
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Python 3.8+
@@ -80,7 +80,7 @@ analyze_interface_pair(
 
 ---
 
-## 🛠️ Software Components
+##  Software Components
 
 ### **Perturbation Scanning (PS)**
 - **Core Framework:** Graph neural network with systematic perturbations
@@ -100,7 +100,7 @@ analyze_interface_pair(
 
 ---
 
-## 📋 Configuration Options
+##  Configuration Options
 
 ### Basic Settings (Single Analysis)
 ```python
@@ -135,7 +135,7 @@ interface_pairs = detect_interface_pairs_from_graph("graphs.pt")
 
 ---
 
-## 📈 Output Interpretation
+##  Output Interpretation
 
 ### **Sum Δ Metric**
 - **High Sum Δ:** Residue participates in **many interactions** with **strong effects** when perturbed
@@ -154,7 +154,7 @@ interface_pairs = detect_interface_pairs_from_graph("graphs.pt")
 ---
 
 
-## 📖 Citation
+##  Citation
 
 If you use PS or IIOS in your research, please cite:
 
@@ -176,7 +176,7 @@ BibTeX:
 
 ---
 
-## 📄 License
+##  License
 
 **ACADEMIC USE:** ✅ Permitted - Research, teaching, publication  
 **COMMERCIAL USE:** 🚫 Requires authorization - Contact azzaz.fodil@gmail.com  
