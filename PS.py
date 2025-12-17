@@ -18,7 +18,7 @@ ACADEMIC LICENSE
 
 CITATION:
 If you use this software in your research, please cite:
-[Your Paper Reference - Coming Soon]
+https://doi.org/10.64898/2025.12.09.692808
 
 This license ensures open academic collaboration while protecting commercial rights.
 '''
@@ -1309,4 +1309,5 @@ if __name__ == "__main__":
     print(f"✅ OUTPUT: Combined Excel-ready format for all interfaces")
     print(f"✅ TEMPORAL ANALYSIS: Early/Mid/Late stages for each interface")
     print("="*85)
+
 
