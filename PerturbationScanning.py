@@ -1,4 +1,4 @@
-# @title  UNIVERSAL INTERFACE ANALYZER 
+
 '''
 Temporal Perturbation Scanning (TPS)
 By Fodil Azzaz, PhD, All right reserved
@@ -1308,4 +1308,5 @@ if __name__ == "__main__":
     print(f"✅ PERTURBATIONS: 6 biological types + 3 original methods")
     print(f"✅ OUTPUT: Combined Excel-ready format for all interfaces")
     print(f"✅ TEMPORAL ANALYSIS: Early/Mid/Late stages for each interface")
+
     print("="*85)
