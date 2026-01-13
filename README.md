@@ -19,7 +19,7 @@ If perturbing a residue in a biologically realistic way strongly changes the mod
 > **Preprint:** [DOI 10.64898/2025.12.09.692808](https://doi.org/10.64898/2025.12.09.692808)  
 > 
 ---
-Key Features
+## Key Features
 
 - Six biologically motivated perturbation types
 - Residue-level interpretability (not atom-level noise)
@@ -29,7 +29,22 @@ Key Features
 - Fully compatible with molecular dynamics trajectories
 
 ---
+## Biological Perturbation Types
 
+Perturbation Scanning applies chemically meaningful modifications instead of arbitrary masking:
+
+- Perturbation Type |	Biological Meaning
+- Electrostatic	| Charge neutralization / inversion
+- Hydrophobic | Polarity reversal of hydrophobic patches
+- Steric |	Bulky side-chain substitutions
+- Aromatic |	Disruption of π–π and CH–π interactions
+- Hydrogen bond	| Collapse of H-bond networks
+- Conformational | 	Local structural displacement
+
+Each residue pair is scored using the maximum disruptive effect across perturbations.
+
+
+---
 ##  Quick Start
 
 ### Prerequisites
