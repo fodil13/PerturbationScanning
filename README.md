@@ -8,9 +8,12 @@ PerturbationScanning needs:
 
 ##  AI-Driven Biomolecular Interface Analysis & Design
 
-**Perturbation Scanning (PS)** is a computational framework that transforms molecular interaction analysis from passive observation to active mechanistic interrogation. By combining graph neural networks with systematic physicochemical perturbations, PS enables **stage-resolved, force-specific decomposition** of molecular interfaces—revealing not just *which* residues participate, but *how* and *when* they contribute through specific physical forces.
+Perturbation Scanning (PS) is a biologically grounded interpretability framework for Graph Neural Networks (GNNs) applied to protein–protein interfaces.
 
-**Intelligent Interface Optimization Scanner (IIOS)** translates these mechanistic insights into actionable design proposals, bridging understanding with engineering.
+Rather than relying on abstract gradients or attention weights, PS identifies functionally critical residues by measuring how biophysically meaningful perturbations alter the model’s prediction of interface strength.
+
+Key idea:
+If perturbing a residue in a biologically realistic way strongly changes the model output, that residue is functionally important.
 
 > **Paper:** "An AI-Driven Platform for Deconstructing and Engineering Biomolecular Recognition"  
 > **Preprint:** [DOI 10.64898/2025.12.09.692808](https://doi.org/10.64898/2025.12.09.692808)  
