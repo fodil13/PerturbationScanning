@@ -14,7 +14,7 @@ PerturbationScanning needs:
 
 > **Paper:** "An AI-Driven Platform for Deconstructing and Engineering Biomolecular Recognition"  
 > **Preprint:** [DOI 10.64898/2025.12.09.692808](https://doi.org/10.64898/2025.12.09.692808)  
-> **Science Submission:** *Under review*
+> 
 
 ---
 
