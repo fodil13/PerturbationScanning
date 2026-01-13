@@ -1,6 +1,6 @@
 
 '''
-Temporal Perturbation Scanning (TPS)
+Perturbation Scanning (PS)
 By Fodil Azzaz, PhD, All right reserved
 Copyright (c) 2025 Fodil Azzaz
 
@@ -1310,3 +1310,4 @@ if __name__ == "__main__":
     print(f"✅ TEMPORAL ANALYSIS: Early/Mid/Late stages for each interface")
 
     print("="*85)
+
