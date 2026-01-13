@@ -52,57 +52,12 @@ PS calculates comprehensive interface metrics comparable to experimental measure
 
 ---
 
-##  Use Cases
-
-### A. **Protein Engineering**
-```python
-# Analyze antibody-antigen interface
-analyze_interface_pair(
-    segid1="ANTIBODY",
-    segid2="ANTIGEN",
-    stage_boundaries={'initial': (0, 0.2), 'stable': (0.2, 1.0)}
-)
-```
-
-### B. **Membrane Protein Analysis**
-```python
-# Lipid-protein interactions in membranes
-analyze_interface_pair(
-    segid1="PLASMOLIPIN",
-    segid2="CHOLESTEROL",  # Or "POPC", "GM1"
-    total_frames=200
-)
-```
-
-### C. **Neurotoxin-Receptor Studies**
-```python
-# Compare different receptor affinities
-analyze_interface_pair(
-    segid1="BoNT/B1",
-    segid2="SYT1",  # vs SYT2
-    n_runs=3  # Statistical replicates
-)
-```
-
----
-
-##  Software Components
-
 ### **Perturbation Scanning (PS)**
 - **Core Framework:** Graph neural network with systematic perturbations
 - **Perturbation Types:** Electrostatic, hydrophobic, steric, aromatic, H-bond, conformational
 - **Input:** Molecular dynamics trajectories or static PDB structures
 - **Output:** Residue-level, stage-resolved, force-specific contributions
 
-### **PS-Lite** (Included)
-- **Purpose:** Rapid analysis of static structures
-- **No ML required:** Rule-based scoring
-- **Use case:** Preliminary screening, mutagenesis guidance
-
-### **Intelligent Interface Optimization Scanner (IIOS)**
-- **Input:** PS interface profiles
-- **Output:** Ranked, energy-scored mutation proposals
-- **Design strategies:** Electrostatic complementarity, hydrophobic packing, π-stacking enhancement
 
 ---
 
