@@ -21,12 +21,12 @@ If perturbing a residue in a biologically realistic way strongly changes the mod
 ---
 Key Features
 
-. Six biologically motivated perturbation types
-. Residue-level interpretability (not atom-level noise)
-. Temporal staging (early / mid / late binding dynamics)
-. SUM Δ metric combining interaction strength and frequency
-. Model-agnostic (works with any trained GNN)
-. Fully compatible with molecular dynamics trajectories
+- Six biologically motivated perturbation types
+- Residue-level interpretability (not atom-level noise)
+- Temporal staging (early / mid / late binding dynamics) ps: user can define more or less stages
+- SUM Δ metric combining interaction strength and frequency
+- Model-agnostic (works with any trained GNN)
+- Fully compatible with molecular dynamics trajectories
 
 ---
 
