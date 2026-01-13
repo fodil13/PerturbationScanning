@@ -18,6 +18,15 @@ If perturbing a residue in a biologically realistic way strongly changes the mod
 > **Paper:** "An AI-Driven Platform for Deconstructing and Engineering Biomolecular Recognition"  
 > **Preprint:** [DOI 10.64898/2025.12.09.692808](https://doi.org/10.64898/2025.12.09.692808)  
 > 
+---
+Key Features
+
+✅ Six biologically motivated perturbation types
+✅ Residue-level interpretability (not atom-level noise)
+✅ Temporal staging (early / mid / late binding dynamics)
+✅ SUM Δ metric combining interaction strength and frequency
+✅ Model-agnostic (works with any trained GNN)
+✅ Fully compatible with molecular dynamics trajectories
 
 ---
 
