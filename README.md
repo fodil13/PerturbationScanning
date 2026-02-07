@@ -1,7 +1,6 @@
 # Perturbation Scanning (PS) 
 
-#Before using,
-PerturbationScanning needs:
+Before using, PerturbationScanning needs:
 -  .pt file from md-graph-converter: https://github.com/fodil13/md-graph-converter
 -  .pth trained model from Stability Interface trainer: https://github.com/fodil13/stability-interface-TRAINER
 -  any question? contact me: azzaz.fodil@gmail.com
