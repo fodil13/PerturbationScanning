@@ -7,7 +7,13 @@ PerturbationScanning needs:
 -  any question? contact me: azzaz.fodil@gmail.com
 
 # USAGE
-On your own machin or using Google Colab. You just have to copy paste each cote in a Google Colab notebook and upload your files in your Google Drive. Then, set the correct path inside the code (everything is explained, but you are welcome to send a message if you request help). 
+On your own machin or using Google Colab. If you use Google Colab, copy paste each code in your notebook and then upload your files in your Google Drive. Then, set the correct path inside the code (everything is explained, but you are welcome to send a message if you request help). 
+You will also need to install the following dependencies: 
+- !pip install numpy
+- !pip install MDAnalysis
+- !pip install torch
+- !pip install torch_geometric
+
 
 ##  AI-Driven Biomolecular Interface Analysis & Design
 
