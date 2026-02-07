@@ -7,7 +7,7 @@ PerturbationScanning needs:
 -  any question? contact me: azzaz.fodil@gmail.com
 
 # USAGE
-On your own machin or using Google Colab. You just have to copy paste each cote in a Google Colab notebook and upload your files in your Google Drive. Then, set the correct path inside the code (everything is explained). 
+On your own machin or using Google Colab. You just have to copy paste each cote in a Google Colab notebook and upload your files in your Google Drive. Then, set the correct path inside the code (everything is explained, but you are welcome to send a message if you request help). 
 
 ##  AI-Driven Biomolecular Interface Analysis & Design
 
