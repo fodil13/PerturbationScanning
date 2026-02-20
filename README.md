@@ -117,25 +117,6 @@ N_RUNS = 1
 NUM_RESIDUES_DISPLAY = 10
 ```
 
-### Advanced: Custom Temporal Staging
-```python
-stage_boundaries = {
-    'initial_encounter': (0.0, 0.15),
-    'docking': (0.15, 0.4),
-    'optimization': (0.4, 0.8),
-    'final_complex': (0.8, 1.0)
-}
-```
-
-### Batch Processing
-```python
-# Analyze multiple interfaces automatically
-interface_pairs = detect_interface_pairs_from_graph("graphs.pt")
-# Returns: [("PROA", "PROB"), ("PROA", "PROC"), ("PROB", "PROC")]
-```
-
----
-
 ##  Output Interpretation
 
 ### **Sum Δ Metric**
@@ -163,19 +144,6 @@ If you use PS or IIOS in your research, please cite:
 Azzaz, F., & Fantini, J. (2025). An AI-Driven Platform for Deconstructing and Engineering 
 Biomolecular Recognition. Preprint. https://doi.org/10.64898/2025.12.09.692808
 ```
-
-BibTeX:
-```bibtex
-@article{azzaz2025perturbation,
-  title={An AI-Driven Platform for Deconstructing and Engineering Biomolecular Recognition},
-  author={Azzaz, Fodil and Fantini, Jacques},
-  journal={Preprint},
-  year={2025},
-  doi={10.64898/2025.12.09.692808}
-}
-```
-
----
 
 ##  License
 
