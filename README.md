@@ -162,12 +162,4 @@ See full license terms in the code header.
 - **Related Tools:** [MD Graph Converter](https://github.com/fodil13/md-graph-converter)
 
 ---
-
-##  Related Resources
-
-1. **Paper:** [DOI 10.64898/2025.12.09.692808](https://doi.org/10.64898/2025.12.09.692808)
-2. **Graph Converter:** [github.com/fodil13/md-graph-converter](https://github.com/fodil13/md-graph-converter)
-3. **Example Datasets:** Available upon request
-
----
 Fodil Azzaz, PhD
