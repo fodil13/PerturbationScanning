@@ -170,8 +170,4 @@ See full license terms in the code header.
 3. **Example Datasets:** Available upon request
 
 ---
-
-**Perturbation Scanning transforms molecular recognition from observational science to engineering discipline.**
-
----
-*Fodil Azzaz, PhD
+Fodil Azzaz, PhD
