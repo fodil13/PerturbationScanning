@@ -1,8 +1,9 @@
 # RoadMap 
 
-- Implementation of GAT
-- UMAP
-- Node/edge-level prediction
+- Implementation of GAT (Done)
+- UMAP (Done)
+- Node/edge-level prediction (Done)
+- Usage of burried area as ground truth (Done)
 - and more
 
 # Perturbation Scanning (PS) 
