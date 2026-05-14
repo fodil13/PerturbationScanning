@@ -1,4 +1,4 @@
-# RoadMap for Perturbation Scanning version 2 (Run now on G Attention Networks (GAT))
+# RoadMap for Perturbation Scanning version 2 (Run now on Graph Attention Networks (GAT))
 
 - Implementation of GAT (Done)
 - UMAP (Done)
